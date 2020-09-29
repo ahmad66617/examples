@@ -1,4 +1,6 @@
-class Fetch {
+import Alert from "./Alert";
+
+export default class Fetch {
     constructor(options) {
         this.options = options;
         if (!this.options.success) this.options.success = this.success;
@@ -9,6 +11,7 @@ class Fetch {
         try {
             this._request()
                 .then(response => this._checkResponse(response))
+                .then(result => this.options.success(result.json()))
                 .catch(err => {
                     throw new Error('something went wrong!Look ' + err);
                 });
@@ -36,14 +39,14 @@ class Fetch {
     }
 
     _checkResponse(response) {
-        return response.ok ? this.options.success(response.json()) : this.options.error();
+        return response.ok ? response : this.options.error();
     }
 
     success() {
-        alertSuccess('Выполнено!')
+        new Alert('success', 'Выполнено!')
     }
 
     error() {
-        alertDanger('Ошибка сервера.Перезагрузите страницу!')
+        new Alert('error', 'Ошибка сервера.Перезагрузите страницу!')
     }
 }
